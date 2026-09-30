@@ -1,2 +1,2 @@
-# YOBA-ESP-IDF-direct-rendering-example
-123
+# ESP-IDF direct rendering example for YOBA library
+
