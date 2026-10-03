@@ -14,7 +14,10 @@
 
 using namespace YOBA;
 
-// Choosing display driver. Each display has its own register map, resolution & color modes, so
+// Choosing an interface via which MCU will communicate with the display
+SPIDisplayInterface displayInterface {};
+
+// Choosing display driver. Each display has its own register map, resolution & color modes
 ST7789Display display {};
 
 // Choosing renderer that is suitable for our display. RGB565 is a good compromise between RAM/performance,
@@ -30,21 +33,30 @@ constexpr static RGB565Color backgroundColor = RGB888Color(0xFFFFFF).toRGB565();
 constexpr static RGB565Color textColor = RGB888Color(0x000000).toRGB565();
 
 extern "C" void app_main(void) {
-    // Initializing display - replace GPIOs with yours
-    display.setup(
+    // Initializing display interface - replace GPIOs with yours
+    displayInterface.setup(
 		GPIO_NUM_16,
 		GPIO_NUM_15,
 		GPIO_NUM_17,
 		GPIO_NUM_18,
 		GPIO_NUM_48,
-		60'000'000,
+
+		SPI2_HOST,
+		0,
+		80'000'000
+    );
+
+	// Initializing display with desired interface & resolution
+	display.setup(
+		&displayInterface,
 
 		Size(240, 320),
 		Rotation::none,
 		ColorModel::RGB565
-    );
+   );
 
-    // Assigning display as rendering target
+    // Initializing renderer & assigning display as rendering target
+	renderer.setup();
     renderer.setTarget(&display);
 
     // By default, display is turned off to prevent random memory garbage to be shown
